@@ -19,6 +19,9 @@ public class JaxRsApplication extends Application {
         // Registrar aquí todos los recursos REST
         classes.add(HelloResource.class);
         classes.add(UsuarioResource.class);
+        classes.add(AmistadResource.class);
+        classes.add(PublicacionResource.class);
+        classes.add(ComentarioResource.class);
         return classes;
     }
 }
