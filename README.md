@@ -254,6 +254,244 @@ Elimina un mensaje por ID.
 
 **Ejemplo:** `DELETE /api/hello/123`
 
+## Recurso Usuario
+
+El proyecto incluye un recurso completo de gestión de usuarios (`UsuarioResource`) con todas las operaciones CRUD y almacenamiento en memoria.
+
+### Estructura del Usuario
+
+Un usuario tiene los siguientes campos:
+- `id` (Long): Identificador único (generado automáticamente)
+- `nombre` (String): Nombre del usuario (obligatorio)
+- `apellido` (String): Apellido del usuario
+- `email` (String): Email del usuario (obligatorio, único)
+- `edad` (Integer): Edad del usuario
+- `telefono` (String): Número de teléfono
+- `direccion` (String): Dirección del usuario
+
+### Endpoints Disponibles
+
+#### GET /api/usuarios
+Obtiene todos los usuarios. Soporta filtrado por nombre mediante query parameter.
+
+**Query Parameters:**
+- `nombre` (opcional): Filtra usuarios por nombre (búsqueda parcial, case-insensitive)
+
+**Ejemplos:**
+```bash
+# Obtener todos los usuarios
+curl http://localhost:8081/api/usuarios
+
+# Buscar usuarios por nombre
+curl http://localhost:8081/api/usuarios?nombre=Juan
+```
+
+**Respuesta:**
+```json
+[
+  {
+    "id": 1,
+    "nombre": "Juan",
+    "apellido": "Pérez",
+    "email": "juan.perez@example.com",
+    "edad": 30,
+    "telefono": "+1234567890",
+    "direccion": "Calle Principal 123"
+  },
+  {
+    "id": 2,
+    "nombre": "María",
+    "apellido": "González",
+    "email": "maria.gonzalez@example.com",
+    "edad": 25,
+    "telefono": "+0987654321",
+    "direccion": "Avenida Central 456"
+  }
+]
+```
+
+#### GET /api/usuarios/{id}
+Obtiene un usuario específico por su ID.
+
+**Ejemplo:** `GET /api/usuarios/1`
+
+**Respuesta:**
+```json
+{
+  "id": 1,
+  "nombre": "Juan",
+  "apellido": "Pérez",
+  "email": "juan.perez@example.com",
+  "edad": 30,
+  "telefono": "+1234567890",
+  "direccion": "Calle Principal 123"
+}
+```
+
+**Error (404):**
+```json
+{
+  "error": "Usuario no encontrado con ID: 999"
+}
+```
+
+#### POST /api/usuarios
+Crea un nuevo usuario.
+
+**Body:**
+```json
+{
+  "nombre": "Pedro",
+  "apellido": "Martínez",
+  "email": "pedro.martinez@example.com",
+  "edad": 28,
+  "telefono": "+5566778899",
+  "direccion": "Calle Secundaria 789"
+}
+```
+
+**Respuesta (201 Created):**
+```json
+{
+  "id": 4,
+  "nombre": "Pedro",
+  "apellido": "Martínez",
+  "email": "pedro.martinez@example.com",
+  "edad": 28,
+  "telefono": "+5566778899",
+  "direccion": "Calle Secundaria 789"
+}
+```
+
+**Error (400):**
+```json
+{
+  "error": "El nombre es obligatorio"
+}
+```
+
+o
+
+```json
+{
+  "error": "Ya existe un usuario con el email: pedro.martinez@example.com"
+}
+```
+
+#### PUT /api/usuarios/{id}
+Actualiza un usuario existente.
+
+**Ejemplo:** `PUT /api/usuarios/1`
+
+**Body:**
+```json
+{
+  "nombre": "Juan Carlos",
+  "apellido": "Pérez",
+  "email": "juan.perez@example.com",
+  "edad": 31,
+  "telefono": "+1234567890",
+  "direccion": "Calle Principal 123, Piso 2"
+}
+```
+
+**Respuesta:**
+```json
+{
+  "id": 1,
+  "nombre": "Juan Carlos",
+  "apellido": "Pérez",
+  "email": "juan.perez@example.com",
+  "edad": 31,
+  "telefono": "+1234567890",
+  "direccion": "Calle Principal 123, Piso 2"
+}
+```
+
+#### DELETE /api/usuarios/{id}
+Elimina un usuario por ID.
+
+**Ejemplo:** `DELETE /api/usuarios/1`
+
+**Respuesta:**
+```json
+{
+  "message": "Usuario eliminado correctamente"
+}
+```
+
+**Error (404):**
+```json
+{
+  "error": "Usuario no encontrado con ID: 999"
+}
+```
+
+#### GET /api/usuarios/contar
+Obtiene el número total de usuarios almacenados.
+
+**Ejemplo:** `GET /api/usuarios/contar`
+
+**Respuesta:**
+```json
+{
+  "total": 3
+}
+```
+
+### Características del Recurso Usuario
+
+- **Almacenamiento en memoria**: Los datos se guardan en memoria usando `ConcurrentHashMap` para thread-safety
+- **Datos de ejemplo**: El repositorio se inicializa automáticamente con 3 usuarios de ejemplo
+- **Validaciones**: 
+  - Email único (no se permiten duplicados)
+  - Campos obligatorios: nombre y email
+- **Búsqueda**: Soporta búsqueda por nombre (parcial, case-insensitive)
+- **Thread-safe**: Utiliza estructuras de datos concurrentes para soportar múltiples peticiones simultáneas
+
+### Ejemplos de Uso Completo
+
+```bash
+# 1. Obtener todos los usuarios
+curl http://localhost:8081/api/usuarios
+
+# 2. Buscar usuarios por nombre
+curl http://localhost:8081/api/usuarios?nombre=Juan
+
+# 3. Obtener un usuario específico
+curl http://localhost:8081/api/usuarios/1
+
+# 4. Crear un nuevo usuario
+curl -X POST http://localhost:8081/api/usuarios \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nombre": "Ana",
+    "apellido": "López",
+    "email": "ana.lopez@example.com",
+    "edad": 27,
+    "telefono": "+9988776655",
+    "direccion": "Avenida Norte 321"
+  }'
+
+# 5. Actualizar un usuario
+curl -X PUT http://localhost:8081/api/usuarios/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nombre": "Juan Carlos",
+    "apellido": "Pérez",
+    "email": "juan.perez@example.com",
+    "edad": 31,
+    "telefono": "+1234567890",
+    "direccion": "Calle Principal 123"
+  }'
+
+# 6. Eliminar un usuario
+curl -X DELETE http://localhost:8081/api/usuarios/1
+
+# 7. Contar usuarios
+curl http://localhost:8081/api/usuarios/contar
+```
+
 ## Despliegue
 
 Para información detallada sobre cómo ejecutar y desplegar el servicio, consulta la sección [Ejecutar el Servicio](#ejecutar-el-servicio) más arriba.

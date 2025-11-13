@@ -18,6 +18,7 @@ public class JaxRsApplication extends Application {
         Set<Class<?>> classes = new HashSet<>();
         // Registrar aquí todos los recursos REST
         classes.add(HelloResource.class);
+        classes.add(UsuarioResource.class);
         return classes;
     }
 }
